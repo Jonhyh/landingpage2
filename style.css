@@ -2,7 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  text-align: center;
+  text-align: center; /* centers inline elements like headings */
   background: #f4f4f9;
   color: #333;
 }
@@ -25,6 +25,26 @@ header p {
 
 main {
   padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centers the block */
+}
+
+main p {
+  text-align: left;     /* text stays left aligned */
+  max-width: 600px;     /* keeps lines readable */
+  margin-bottom: 1rem;  /* spacing below paragraphs */
+}
+
+main ul {
+  text-align: left;     /* bullet list aligns left */
+  max-width: 600px;
+  margin: 0 auto 1rem;  /* center block, add spacing */
+  padding-left: 1.2rem; /* space for bullets */
+}
+
+main li {
+  margin-bottom: 0.5rem; /* spacing between list items */
 }
 
 .btn {
