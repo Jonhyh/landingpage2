@@ -23,7 +23,7 @@ pipeline {
       when { expression { fileExists('Dockerfile') && readFile('Dockerfile').trim() } }
       steps {
         withCredentials([usernamePassword(
-          credentialsId: 'docker-hubcredentials',   // <- must match your Jenkins credential ID
+          credentialsId: 'docker-hub-credentials',   // <- must match your Jenkins credential ID
           usernameVariable: 'DOCKER_USERNAME',
           passwordVariable: 'DOCKER_PASSWORD'
         )]) {
