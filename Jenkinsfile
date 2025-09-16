@@ -1,24 +1,40 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Verify') {
-            steps {
-                // This command lists the files to verify they were checked out correctly
-                bat 'dir'
-            }
-        } 
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials',
-                passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
-                    bat 'docker push hojonathan/landingpage2'
-                }
-            }
-        }
-
+  stages {
+    stage('Verify') {
+      steps {
+        bat '''
+          dir
+          docker version
+        '''
+      }
     }
-}
 
+    stage('Build Docker Image') {
+      when { expression { fileExists('Dockerfile') && readFile('Dockerfile').trim() } }
+      steps {
+        // Build a local tag first
+        bat 'docker build -t landingpage2:ci .'
+      }
+    }
+
+    stage('Push Docker Image') {
+      when { expression { fileExists('Dockerfile') && readFile('Dockerfile').trim() } }
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'docker-hubcredentials',   // <- must match your Jenkins credential ID
+          usernameVariable: 'DOCKER_USERNAME',
+          passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+          bat """
+            echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+            docker tag landingpage2:ci %DOCKER_USERNAME%/landingpage2:latest
+            docker push %DOCKER_USERNAME%/landingpage2:latest
+            docker logout
+          """
+        }
+      }
+    }
+  }
+}
